@@ -3,9 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_NUMBER_OF_OPERANDS 3
+
 enum regs {R0 = 0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R_CMP, R_FLAGS};
 enum conditions {EQ = 8, NE = 4, GT = 2, LT = 1};
-enum modes {LITERAL = 0, MEMORY_ADDRESS, REGISTER_ADDRESS, LABEL, EMPTY};
+enum modes {LITERAL = 0, MEMORY_ADDRESS, REGISTER_ADDRESS, LABEL, CONDITION, EMPTY};
+enum operand_index {OPERAND1, OPERAND2, OPERAND3};
 
 /*
 the concept is EQ is just 8, but for NE, it can either be GT OR LT
@@ -35,31 +38,23 @@ enum opcodes {
   OUT //1
 };
 
+typedef struct {
+  enum modes operand_mode;
+
+  union {
+    size_t literal;
+    size_t label;
+    size_t memory_location;
+    enum conditions condition;
+    enum regs reg;    
+  } data;
+
+} operand;
 
 typedef struct {
 
-  enum opcodes opcode;  
-
-  enum modes operand1_mode;
-  union {
-    size_t label;
-    enum regs reg;
-    enum conditions condition;
-  } operand1;
-
-  enum modes operand2_mode;
-  union {
-    size_t memory_location;
-    size_t label;
-    size_t literal;
-    enum regs reg;
-  } operand2;
-
-  enum modes operand3_mode;
-  union {
-    size_t literal;
-    enum regs reg;
-  } operand3;
+  enum opcodes opcode;
+  operand operands[MAX_NUMBER_OF_OPERANDS];
   
 } instruction_t;
 
