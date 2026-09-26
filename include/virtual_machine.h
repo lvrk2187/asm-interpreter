@@ -7,6 +7,11 @@
 #define MAX_NUMBER_OF_LABELS 64
 #define MAX_NUMBER_OF_OPERANDS 3
 
+/*
+  errors should be implemented by setting bits within the R_FLAGS 
+  the error bit is the LSB
+*/
+
 enum regs {R0 = 0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R_CMP, R_FLAGS};
 enum conditions {EQ = 8, NE = 4, GT = 2, LT = 1};
 enum modes {LITERAL = 0, MEMORY_ADDRESS, REGISTER_ADDRESS, LABEL, CONDITION, EMPTY};
