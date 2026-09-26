@@ -1,10 +1,19 @@
 #include "../include/virtual_machine.h"
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+instruction_t program[1 << 10];
+bool executing = true;
+
 int memory[1 << 9];
 int registers[1 << 4];
+int pc = 0;
+
+void validate_operands(instruction_t instruction, short expected_operand_count) {
+  if (instruction.operands_count != expected_operand_count) exit(EXIT_FAILURE);
+}
 
 int retrieve_value(instruction_t instruction, enum operand_index index) {
 
@@ -51,25 +60,25 @@ void execute(instruction_t instruction) {
   switch (instruction.opcode) {
     case LDR : 
 
-      if (instruction.operands_count != 2) exit(EXIT_FAILURE);
+      validate_operands(instruction, 0x2);
       
       registers[retrieve_address(instruction, OPERAND1)] =
-      retrieve_value(instruction, OPERAND2);
+        retrieve_value(instruction, OPERAND2);
       
       break;
       
     case STR:
 
-      if (instruction.operands_count != 2) exit(EXIT_FAILURE);
+      validate_operands(instruction, 0x2);
       
       memory[retrieve_address(instruction, OPERAND2)] = 
-      retrieve_value(instruction, OPERAND1);
+        retrieve_value(instruction, OPERAND1);
       
       break;
-      
+    
     case ADD: 
 
-      if (instruction.operands_count != 3) exit(EXIT_FAILURE);
+      validate_operands(instruction, 0x3);
       
       registers[retrieve_address(instruction, OPERAND1)] = 
         retrieve_value(instruction, OPERAND2) + 
@@ -79,30 +88,115 @@ void execute(instruction_t instruction) {
     
     case SUB :
 
-      if (instruction.operands_count != 3) exit(EXIT_FAILURE);
+      if (instruction.operands_count != 0x3) exit(EXIT_FAILURE);
       
       registers[retrieve_address(instruction, OPERAND1)] = 
-        retrieve_value(instruction, OPERAND2) + 
+        retrieve_value(instruction, OPERAND2) - 
         retrieve_value(instruction, OPERAND3);
 
      break;
 
-    case MOV : break;
-    case CMP : break;
-    case B   : break;
-    case AND : break;
-    case ORR : break;
-    case EOR : break;
+    case MOV: 
+
+      validate_operands(instruction, 0x2);
+
+      registers[retrieve_address(instruction, OPERAND1)] = 
+        retrieve_value(instruction, OPERAND2);
+
+      break;
+      
+    case CMP: 
+
+      validate_operands(instruction, 0x2);
+
+      if (retrieve_value(instruction, OPERAND1) == retrieve_value(instruction, OPERAND2)) {
+        registers[R_FLAGS] |= EQ; 
+      } else {
+        registers[R_FLAGS] |= NE;
+      
+        if (retrieve_value(instruction, OPERAND1) > retrieve_value(instruction, OPERAND2)) registers[R_FLAGS] |= GT; 
+        else if (retrieve_value(instruction, OPERAND1) < retrieve_value(instruction, OPERAND2)) registers[R_FLAGS] |= LT; 
+      }
+      
+      break;
+      
+    case B: 
+      if (instruction.operands_count == 0x1) {
+        pc = retrieve_value(instruction, OPERAND1);
+      } else if (instruction.operands_count == 0x2) {
+
+        int branch_condition = retrieve_value(instruction, OPERAND1);
+      
+        if ((registers[R_CMP] & branch_condition) == branch_condition) {
+          pc = retrieve_value(instruction, OPERAND2);
+        }
+      }
+      
+      break;
+      
+    case AND: 
+      validate_operands(instruction, 0x3);
+
+      registers[retrieve_address(instruction, OPERAND1)] = 
+        retrieve_value(instruction, OPERAND2) & 
+        retrieve_value(instruction, OPERAND3);
+        
+    break;
+    
+    case ORR: 
+      validate_operands(instruction, 0x3);
+
+      registers[retrieve_address(instruction, OPERAND1)] = 
+        retrieve_value(instruction, OPERAND2) |
+        retrieve_value(instruction, OPERAND3);
+        
+      break;
+    
+    case EOR: 
+      validate_operands(instruction, 0x3);
+
+      registers[retrieve_address(instruction, OPERAND1)] = 
+        retrieve_value(instruction, OPERAND2) ^ 
+        retrieve_value(instruction, OPERAND3);
+        
+      break;
+      
     case MVN : break;
-    case LSL : break;
-    case LSR : break;
-    case HALT: break;
+    case LSL:
+      validate_operands(instruction, 0x3);
+
+      registers[retrieve_address(instruction, OPERAND1)] = 
+        retrieve_value(instruction, OPERAND2) << 
+        retrieve_value(instruction, OPERAND3);
+        
+      break;
+
+    case LSR:
+      validate_operands(instruction, 0x3);
+
+      registers[retrieve_address(instruction, OPERAND1)] = 
+        retrieve_value(instruction, OPERAND2) >>
+        retrieve_value(instruction, OPERAND3);
+        
+      break;
+      
+    case HALT: 
+    
+        executing = false;
+        
+        break;
     case OUT : 
       printf("%d", retrieve_value(instruction, OPERAND1));
       break;
+  }  
+}
+
+void run_program() {
+  while (executing) {
+    execute(program[pc]);
+    pc++;
   }
 
-  
 }
 
 instruction_t declare_instructions(enum opcodes opcode, size_t operands_count, operand op1, operand op2, operand op3) {
@@ -116,6 +210,7 @@ instruction_t declare_instructions(enum opcodes opcode, size_t operands_count, o
 
   return buffer;
 }
+
 
 
 void output_registers() {

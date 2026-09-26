@@ -2,13 +2,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
+#define MAX_NUMBER_OF_LABELS 64
 #define MAX_NUMBER_OF_OPERANDS 3
 
 enum regs {R0 = 0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R_CMP, R_FLAGS};
 enum conditions {EQ = 8, NE = 4, GT = 2, LT = 1};
 enum modes {LITERAL = 0, MEMORY_ADDRESS, REGISTER_ADDRESS, LABEL, CONDITION, EMPTY};
-enum operand_index {OPERAND1, OPERAND2, OPERAND3};
+enum operand_index {OPERAND1 = 0, OPERAND2, OPERAND3};
 
 /*
 the concept is EQ is just 8, but for NE, it can either be GT OR LT
@@ -59,11 +61,14 @@ typedef struct {
   
 } instruction_t;
 
-extern instruction_t program[];
+extern instruction_t program[1 << 10];
+extern int pc;
 extern int memory[1 << 9];
 extern int registers[1 << 4];
+extern bool executing;
 
 extern void execute(instruction_t instruction);
+extern void run_program();
 
 extern instruction_t declare_instructions(
   enum opcodes opcode, 
