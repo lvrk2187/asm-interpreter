@@ -54,6 +54,7 @@ typedef struct {
 typedef struct {
 
   enum opcodes opcode;
+  short operands_count;
   operand operands[MAX_NUMBER_OF_OPERANDS];
   
 } instruction_t;
@@ -63,3 +64,12 @@ extern int memory[1 << 9];
 extern int registers[1 << 4];
 
 extern void execute(instruction_t instruction);
+
+extern instruction_t declare_instructions(
+  enum opcodes opcode, 
+  size_t operands_count,
+  operand op1, operand op2, operand op3);
+
+extern void memory_out();
+extern void output_registers();
+
