@@ -18,26 +18,6 @@ int main() {
 
   */
 
-  instruction_t f;
-  f.opcode = ADD;
-  f.operands_count = 3;
-
-  operand op1;
-  op1.operand_mode = REGISTER_ADDRESS;
-  op1.data.reg = 0;
-  f.operands[OPERAND1] = op1;
-
-  operand op2;
-  op2.operand_mode = LITERAL;
-  op2.data.literal = 3;
-  f.operands[OPERAND2] = op2;
-
-  operand op3;
-  op3.operand_mode = LITERAL;
-  op3.data.literal = 4;
-  f.operands[OPERAND3] = op3;
-
-
   instruction_t l = declare_instructions
     (ADD, 
     3, 
@@ -53,7 +33,7 @@ int main() {
       .operand_mode = LITERAL,
       .data.literal = 3
       }
-    );
+  );
 
   execute(l);
   output_registers();

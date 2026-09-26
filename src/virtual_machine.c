@@ -42,7 +42,7 @@ int retrieve_address(instruction_t instruction, enum operand_index index) {
       break;
   }
 
-  assert(1);
+  exit(EXIT_FAILURE);
   return 0;
 }
 
@@ -119,7 +119,12 @@ instruction_t declare_instructions(enum opcodes opcode, size_t operands_count, o
 
 
 void output_registers() {
-  for (int i = 0; i < 16; i++) {
-    printf("R%d: %d\n", i, registers[i]);
+  for (enum regs CURRENT_REG = R0; CURRENT_REG < 16; CURRENT_REG++) {
+    
+    if (CURRENT_REG <= 12) printf("R%d: %d\n", CURRENT_REG, registers[CURRENT_REG]);
+    else if (CURRENT_REG == R_CMP) printf("R_CMP: %d\n", registers[CURRENT_REG]);
+    else if (CURRENT_REG == R_FLAGS) printf("R_FLAGS: %d\n", registers[CURRENT_REG]);
+
+
   }
 }
