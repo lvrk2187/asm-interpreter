@@ -13,6 +13,7 @@ struct Label_Table {
 
 extern struct Label_Table* create_label_table();
 extern void insert_into_label_table(char* label_name, size_t location, struct Label_Table *label_table);
+extern bool contains_label(char *label_name, struct Label_Table *label_table);
 extern size_t find_instruction_location(char* label_name, struct Label_Table *label_table);
 extern void destroy_table(struct Label_Table* label_table);
 
