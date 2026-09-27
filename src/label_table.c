@@ -11,10 +11,10 @@ struct Label_Table* create_label_table() {
   return table;
 }
 
-void insert_into_label_table(char* label_name, size_t location, struct Label_Table *label_table) {
+void insert_into_label_table(struct Label label, struct Label_Table *label_table) {
     if (label_table->label_count == MAX_NUMBER_OF_LABELS) invoke_error("TOO MANY LABELS");
 
-    label_table->labels[label_table->label_count] = (struct Label) {.label_name = label_name, .location = location};  
+    label_table->labels[label_table->label_count] = label;
     label_table->label_count++;
 }
 
