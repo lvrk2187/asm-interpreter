@@ -27,7 +27,7 @@ int retrieve_value(instruction_t instruction, enum operand_index index) {
     case REGISTER_ADDRESS:
       return registers[current_operand.data.reg];
     case LABEL:
-      return current_operand.data.label;
+      return current_operand.data.instruction_location;
     case CONDITION:
       return current_operand.data.condition;
     default:

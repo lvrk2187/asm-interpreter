@@ -50,7 +50,7 @@ typedef struct {
 
   union {
     size_t literal;
-    size_t label;
+    size_t instruction_location;
     size_t memory_location;
     enum conditions condition;
     enum regs reg;    
