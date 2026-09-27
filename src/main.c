@@ -1,6 +1,4 @@
 #include <errno.h>
-#include <stdio.h>
-#include <string.h>
 #include "../include/virtual_machine.h"
 
 int main() {
