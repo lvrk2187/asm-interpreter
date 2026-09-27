@@ -6,6 +6,7 @@
 
 #define MAX_NUMBER_OF_LABELS 64
 #define MAX_NUMBER_OF_OPERANDS 3
+#define NUMBER_OF_OPCODES 18
 
 /*
   errors should be implemented by setting bits within the R_FLAGS 
@@ -34,7 +35,10 @@ enum opcodes {
   SUB, //3
   MOV, //2
   CMP, //2
-  B, // 2 or 1 
+  BEQ,
+  BNE,
+  BGT,
+  BLT, 
   AND, //3
   ORR, //3
   EOR, //3

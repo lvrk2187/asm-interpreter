@@ -120,20 +120,38 @@ void execute(instruction_t instruction) {
       
       break;
       
-    case B: 
-      if (instruction.operands_count == 0x1) {
-        pc = retrieve_value(instruction, OPERAND1);
-      } else if (instruction.operands_count == 0x2) {
-
-        int branch_condition = retrieve_value(instruction, OPERAND1);
+    case BEQ: 
       
-        if ((registers[R_CMP] & branch_condition) == branch_condition) {
-          pc = retrieve_value(instruction, OPERAND2);
-        }
+      if ((registers[R_CMP] & EQ) == EQ) {
+        pc = retrieve_value(instruction, OPERAND2);
       }
       
       break;
       
+    case BNE:
+
+      if ((registers[R_CMP] & NE) == NE) {
+        pc = retrieve_value(instruction, OPERAND2);
+      }
+
+      break;
+      
+    case BGT:
+      
+      if ((registers[R_CMP] & GT) == GT) {
+        pc = retrieve_value(instruction, OPERAND2);
+      }
+
+      break;
+
+    case BLT:
+      
+      if ((registers[R_CMP] & LT) == LT) {
+        pc = retrieve_value(instruction, OPERAND2);
+      }
+
+      break;
+            
     case AND: 
       validate_operands(instruction, 0x3);
 
