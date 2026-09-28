@@ -1,5 +1,6 @@
 #include <errno.h>
 #include "../include/virtual_machine.h"
+#include "../include/interpreter.h"
 
 int main() {
 
@@ -14,7 +15,7 @@ int main() {
     bruh = strtok(NULL, " ");
   }
 
-  */
+  
 
   instruction_t k = declare_instructions
     (ADD, 
@@ -49,12 +50,15 @@ int main() {
       .data.literal = 3
       }
   );
-
-  
   execute(k);
   execute(l);
   output_registers();
+  */
+  
+
 
   // printf("%lu", sizeof(instruction_t));
+
+  printf("%d\n", match_opcode("SUB"));
   
 }

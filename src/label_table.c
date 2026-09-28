@@ -20,7 +20,7 @@ void insert_into_label_table(struct Label label, struct Label_Table *label_table
 
 bool contains_label(char* label_name, struct Label_Table *label_table) {
   for (int i = 0; i < label_table->label_count; i++) {
-    if (strcmp(label_name, label_table->labels[i].label_name)) return true; 
+    if (!strcmp(label_name, label_table->labels[i].label_name)) return true; 
   }
 
   return false;
@@ -28,7 +28,7 @@ bool contains_label(char* label_name, struct Label_Table *label_table) {
 
 size_t find_instruction_location(char* label_name, struct Label_Table *label_table) {
   for (int i = 0; i < label_table->label_count; i++) {
-    if (strcmp(label_name, label_table->labels[i].label_name)) return label_table->labels[i].location; 
+    if (!strcmp(label_name, label_table->labels[i].label_name)) return label_table->labels[i].location; 
   }
 
   return -1;

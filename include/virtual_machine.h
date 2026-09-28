@@ -35,6 +35,7 @@ enum opcodes {
   SUB, //3
   MOV, //2
   CMP, //2
+  B,
   BEQ,
   BNE,
   BGT,

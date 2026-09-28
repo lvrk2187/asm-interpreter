@@ -1,4 +1,5 @@
 #include "../include/virtual_machine.h"
+#include "../include/interpreter.h"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -12,7 +13,7 @@ int registers[1 << 4];
 int pc = 0;
 
 void validate_operands(instruction_t instruction, short expected_operand_count) {
-  if (instruction.operands_count != expected_operand_count) exit(EXIT_FAILURE);
+  if (instruction.operands_count != expected_operand_count) invoke_error("INVALID OPERANDS");
 }
 
 int retrieve_value(instruction_t instruction, enum operand_index index) {
@@ -119,11 +120,15 @@ void execute(instruction_t instruction) {
       }
       
       break;
+
+    case B:
+      pc = retrieve_value(instruction, OPERAND1);
+      break;
       
     case BEQ: 
       
       if ((registers[R_CMP] & EQ) == EQ) {
-        pc = retrieve_value(instruction, OPERAND2);
+        pc = retrieve_value(instruction, OPERAND1);
       }
       
       break;
@@ -131,7 +136,7 @@ void execute(instruction_t instruction) {
     case BNE:
 
       if ((registers[R_CMP] & NE) == NE) {
-        pc = retrieve_value(instruction, OPERAND2);
+        pc = retrieve_value(instruction, OPERAND1);
       }
 
       break;
@@ -139,7 +144,7 @@ void execute(instruction_t instruction) {
     case BGT:
       
       if ((registers[R_CMP] & GT) == GT) {
-        pc = retrieve_value(instruction, OPERAND2);
+        pc = retrieve_value(instruction, OPERAND1);
       }
 
       break;
@@ -147,7 +152,7 @@ void execute(instruction_t instruction) {
     case BLT:
       
       if ((registers[R_CMP] & LT) == LT) {
-        pc = retrieve_value(instruction, OPERAND2);
+        pc = retrieve_value(instruction, OPERAND1);
       }
 
       break;
