@@ -8,7 +8,7 @@
 instruction_t program[1 << 10];
 bool executing = true;
 
-int memory[1 << 9];
+int memory[SIZE_OF_MEMORY];
 int registers[1 << 4];
 int pc = 0;
 
@@ -29,8 +29,6 @@ int retrieve_value(instruction_t instruction, enum operand_index index) {
       return registers[current_operand.data.reg];
     case LABEL:
       return current_operand.data.instruction_location;
-    case CONDITION:
-      return current_operand.data.condition;
     default:
       break;
   }

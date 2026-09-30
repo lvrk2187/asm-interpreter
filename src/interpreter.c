@@ -7,7 +7,7 @@
 
 //remember for to increment program counter in main loop
 
-char string_form_of_opcodes[NUMBER_OF_OPCODES][4] = {"LDR", "STR", "ADD", "SUB", "MOV", "CMP", "BEQ", "BNE", "BGT", "BLT", "AND", "ORR", "EOR", "MVN", "LSL", "LSR", "HALT", "OUT"};
+char string_form_of_opcodes[NUMBER_OF_OPCODES][4] = {"LDR", "STR", "ADD", "SUB", "MOV", "CMP", "B", "BEQ", "BNE", "BGT", "BLT", "AND", "ORR", "EOR", "MVN", "LSL", "LSR", "HALT", "OUT"};
 char string_form_of_conditions[CONDITIONS_COUNT][2] = {"EQ", "NE", "GT", "LT"};
 
 void invoke_error(const char* error_message) {
@@ -26,9 +26,40 @@ enum opcodes match_opcode(char *opcode) {
   return -1;
 }
 
+long parse_number(char* number) {
+  char *remainder; 
+  long returning_number = strtol(number + 1, &remainder, 10);
+
+  if (strlen(remainder) > 0) invoke_error("INVALID ADDRESSING");
+  return returning_number;
+}
+
+bool expression_is_numeric(char* expr) {
+  for (int i = 0; i < strlen(expr); i++) {
+    if (!isnumber(expr[i])) return false;
+  }
+
+  return true;
+}
+
+char* remove_spaces(char *expr) {
+  
+  char* buffer = malloc(sizeof(char) * (strlen(expr) + 1));
+
+  for (int i = 0, j = 0; i < strlen(expr); i++) {
+    if (expr[i] != ' ') {
+      buffer[j] = expr[i];
+      j++;
+    }
+  }
+  
+  return buffer;
+}
+
 instruction_t parse_line(char* line, struct Label_Table *label_table) {
 
-  instruction_t instruction_struct;
+  instruction_t instruction_struct = {0};
+  instruction_struct.operands_count = 0;
   short operand_count = 0;
   
   char* first_word = strtok(line, " ");
@@ -50,22 +81,47 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
 
   instruction_struct.opcode = opcode_buffer;
   
+  char* current_operand_with_spaces = strtok(NULL,",");
 
   //parse args
-  while (first_word != NULL) {
-    char* current_operand = strtok(NULL,",");
+  while (current_operand_with_spaces != NULL) {
+    char* current_operand = remove_spaces(current_operand_with_spaces);
+    
     if (strlen(current_operand) < 1) invoke_error("FAILED PARSING OPERAND");
 
-    if (current_operand[0] == 'R') {
+    if (contains_label(current_operand, label_table)) {
+      instruction_struct.operands[operand_count].operand_mode = LABEL;
+      instruction_struct.operands[operand_count].data.instruction_location = find_instruction_location(current_operand, label_table);
+    } else if (current_operand[0] == 'R') { 
+
+      long register_number = parse_number(current_operand);
       
-    } else {
+      if (register_number < 0 || register_number > 12) invoke_error("INVALID REGISTER");
+
+      instruction_struct.operands[operand_count].operand_mode = REGISTER_ADDRESS;
+      instruction_struct.operands[operand_count].data.reg = (enum regs) register_number;
+      
+    } else if (current_operand[0] == '#') {
+
+      long literal_number = parse_number(current_operand);
+
+      if (literal_number < 0 || literal_number > SIZE_OF_MEMORY) invoke_error("INVALID MEMORY ADDRESS");
+        
+      instruction_struct.operands[operand_count].operand_mode = LITERAL;
+      instruction_struct.operands[operand_count].data.literal =  literal_number;  
+    } else if (expression_is_numeric(current_operand)) {
       
     }
-
     operand_count++;
-  }
-  
-  
+    current_operand_with_spaces = strtok(NULL,",");
+  } 
+
+  instruction_struct.operands_count = operand_count;
+
+  destroy_table(label_table);
   return instruction_struct;
   
 }
+
+//MOV R1, #3
+//BEQ plus3

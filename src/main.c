@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <string.h>
 #include "../include/virtual_machine.h"
 #include "../include/interpreter.h"
 
@@ -58,7 +59,16 @@ int main() {
 
 
   // printf("%lu", sizeof(instruction_t));
+  char apple[] = "ADD R1, #2, #1";
+  struct Label_Table* table = create_label_table();
+  
 
-  printf("%d\n", match_opcode("SUB"));
+  instruction_t a = parse_line(apple, table);
+  execute(a);
+
+  output_registers();
+  
+
+  
   
 }
