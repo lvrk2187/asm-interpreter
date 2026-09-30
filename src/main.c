@@ -59,7 +59,7 @@ int main() {
 
 
   // printf("%lu", sizeof(instruction_t));
-  char apple[] = "ADD R1, #2, #1";
+  char apple[] = "BOY:";
   struct Label_Table* table = create_label_table();
   
 

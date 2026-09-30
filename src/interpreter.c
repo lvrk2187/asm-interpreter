@@ -111,6 +111,7 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
       instruction_struct.operands[operand_count].data.literal =  literal_number;  
     } else if (expression_is_numeric(current_operand)) {
       //implement 
+      
     }
     operand_count++;
     free(current_operand);
