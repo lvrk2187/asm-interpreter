@@ -7,11 +7,11 @@
 
 //remember for to increment program counter in main loop
 
-char string_form_of_opcodes[NUMBER_OF_OPCODES][4] = {"LDR", "STR", "ADD", "SUB", "MOV", "CMP", "B", "BEQ", "BNE", "BGT", "BLT", "AND", "ORR", "EOR", "MVN", "LSL", "LSR", "HALT", "OUT"};
+char string_form_of_opcodes[NUMBER_OF_OPCODES][5] = {"LDR", "STR", "ADD", "SUB", "MOV", "CMP", "B", "BEQ", "BNE", "BGT", "BLT", "AND", "ORR", "EOR", "MVN", "LSL", "LSR", "HALT", "OUT"};
 char string_form_of_conditions[CONDITIONS_COUNT][2] = {"EQ", "NE", "GT", "LT"};
 
 void invoke_error(const char* error_message) {
-  fprintf(stderr, "ERROR: %s, LINE: %d", error_message, pc);
+  fprintf(stderr, "ERROR: %s, LINE: %d\n", error_message, pc);
   exit(EXIT_FAILURE);
 }
 
@@ -26,7 +26,7 @@ enum opcodes match_opcode(char *opcode) {
   return -1;
 }
 
-long parse_number(char* number) {
+long parse_number(char* number) { //parse number has a slides it forward by one
   char *remainder; 
   long returning_number = strtol(number + 1, &remainder, 10);
 
@@ -111,7 +111,13 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
       instruction_struct.operands[operand_count].data.literal =  literal_number;  
     } else if (expression_is_numeric(current_operand)) {
       //implement 
+      long memory_location = atoi(current_operand);
+
+      instruction_struct.operands[operand_count].operand_mode = MEMORY_ADDRESS;
+      instruction_struct.operands[operand_count].data.memory_location = memory_location;
       
+    } else {
+      invoke_error("CANNOT PARSE OPERAND");
     }
     operand_count++;
     free(current_operand);
@@ -120,7 +126,7 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
 
   instruction_struct.operands_count = operand_count;
 
-  destroy_table(label_table);
+  //destroy_table(label_table);
   return instruction_struct;
   
 }

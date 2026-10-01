@@ -6,17 +6,8 @@
 int main() {
 
   /* 
-  char* test = malloc(sizeof(char) * 256);
-  test = strncpy(test, "ADD R1, R2, R0", 128);
 
-  char *bruh = strtok(test, " ");
 
-  while (bruh != NULL) {
-    printf("%s\n", bruh);
-    bruh = strtok(NULL, " ");
-  }
-
-  
 
   instruction_t k = declare_instructions
     (ADD, 
@@ -59,16 +50,18 @@ int main() {
 
 
   // printf("%lu", sizeof(instruction_t));
-  char apple[] = "BOY:";
   struct Label_Table* table = create_label_table();
+  char instructions[6][64] = {"MOV R0, #5", "AND R1, R0, #1", "HALT"};
   
+  for (int i = 0; i < 3; i++) {
+    program[i] = parse_line(instructions[i], table);
+  }
 
-  instruction_t a = parse_line(apple, table);
-  execute(a);
-
+  run_program();
+  
   output_registers();
   
 
-  
+  destroy_table(table);
   
 }

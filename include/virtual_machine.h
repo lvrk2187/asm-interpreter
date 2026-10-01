@@ -7,7 +7,7 @@
 #define MAX_NUMBER_OF_LABELS 64
 #define MAX_NUMBER_OF_OPERANDS 3
 #define NUMBER_OF_OPCODES 19
-#define SIZE_OF_MEMORY 1024
+#define SIZE_OF_MEMORY 128
 
 /*
   errors should be implemented by setting bits within the R_FLAGS 
@@ -85,6 +85,6 @@ extern instruction_t declare_instructions(
   size_t operands_count,
   operand op1, operand op2, operand op3);
 
-extern void memory_out();
+extern void output_memory();
 extern void output_registers();
 

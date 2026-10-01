@@ -182,7 +182,7 @@ void execute(instruction_t instruction) {
         
       break;
       
-    case MVN : break;
+    case MVN : break; //nah
     case LSL:
       validate_operands(instruction, 0x3);
 
@@ -243,4 +243,8 @@ void output_registers() {
 
 
   }
+}
+
+void output_memory() {
+  
 }

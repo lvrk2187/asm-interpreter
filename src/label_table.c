@@ -39,3 +39,8 @@ void destroy_table(struct Label_Table* label_table) {
   free(label_table);
 }
 
+void print_table(struct Label_Table label_table) {
+  for (int i = 0; i < label_table.label_count; i++) {
+    printf("%s: %lu", label_table.labels[i].label_name, label_table.labels[i].location);
+  }
+}
