@@ -106,12 +106,7 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
   } else if (first_word[strlen(first_word_with_no_spaces) - 1] == ':') {
     //it is a label then...
     first_word_with_no_spaces[strlen(first_word_with_no_spaces) - 1] = '\0';
-    opcode_buffer = EMP;
-    
-    if (!contains_label(first_word_with_no_spaces, label_table)) {
-      insert_into_label_table((struct Label) {.label_name = first_word_with_no_spaces, .location = pc_track}, label_table);
-    } 
-    
+    opcode_buffer = EMP;    
   } else if (opcode_buffer == -1 && first_word_with_no_spaces[0] != 'B') {
       invoke_error("CANNOT FIND OPCODE");
   }
