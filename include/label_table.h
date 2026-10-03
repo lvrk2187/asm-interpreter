@@ -1,5 +1,7 @@
 #pragma once
 #include "virtual_machine.h"
+#include <stddef.h>
+#include <stdbool.h>
 
 struct Label {
   char *label_name;

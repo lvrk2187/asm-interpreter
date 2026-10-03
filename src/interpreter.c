@@ -42,12 +42,20 @@ bool expression_is_numeric(char* expr) {
   return true;
 }
 
+bool expression_is_alphabetic(char *expr) {
+    for (int i = 0; i < strlen(expr); i++) {
+      if (!isalpha(expr[i])) return false;
+    }
+
+    return true;
+}
+
 char* remove_spaces(char *expr) {
   
   char* buffer = malloc(sizeof(char) * (strlen(expr) + 1));
 
   for (int i = 0, j = 0; i < strlen(expr); i++) {
-    if (expr[i] != ' ') {
+    if (isspace(expr[i]) == 0) {
       buffer[j] = expr[i];
       j++;
     }
@@ -56,26 +64,55 @@ char* remove_spaces(char *expr) {
   return buffer;
 }
 
+ void retrieve_labels_from_src(char* src_file_txt, struct Label_Table* table) {
+  FILE *src_pointer = fopen(src_file_txt, "r");
+
+    char* current_line = NULL;
+    size_t line_number = 0;
+    size_t current_line_buffer_length = 0;
+    ssize_t current_line_length = 0;
+    
+
+  while ((current_line_length = getline(&current_line, &current_line_buffer_length, src_pointer)) != -1) {
+
+    if (current_line_length < 2) invoke_error("INVALID LENGTH");
+    
+    current_line[current_line_length - 1] = '\0';
+    char* remove_spaces_from_label = remove_spaces(current_line);
+
+    if (remove_spaces_from_label[strlen(remove_spaces_from_label) - 1] != ':') continue;
+    
+    remove_spaces_from_label[strlen(remove_spaces_from_label) - 1] = '\0';
+    insert_into_label_table((struct Label) {.label_name = remove_spaces_from_label, .location = line_number}, table);
+  }
+  
+  fclose(src_pointer);
+ }
+
 instruction_t parse_line(char* line, struct Label_Table *label_table) {
 
   instruction_t instruction_struct = {0};
   instruction_struct.operands_count = 0;
   short operand_count = 0;
+  size_t pc_track = 0;
   
   char* first_word = strtok(line, " ");
-  enum opcodes opcode_buffer = match_opcode(first_word);
+  
+  char* first_word_with_no_spaces = remove_spaces(first_word);
+  enum opcodes opcode_buffer = match_opcode(first_word_with_no_spaces);
 
-  if (strlen(first_word) < 1) {   
+  if (strlen(first_word_with_no_spaces) < 1) {   
     invoke_error("FAILED OPCODE PARSING");
-  } else if (first_word[strlen(first_word) - 1] == ':') {
+  } else if (first_word[strlen(first_word_with_no_spaces) - 1] == ':') {
     //it is a label then...
-    first_word[strlen(first_word) - 1] = '\0';
+    first_word_with_no_spaces[strlen(first_word_with_no_spaces) - 1] = '\0';
+    opcode_buffer = EMP;
     
-    if (!contains_label(first_word, label_table)) {
-      insert_into_label_table((struct Label) {.label_name = first_word, .location = pc}, label_table);
-    }
+    if (!contains_label(first_word_with_no_spaces, label_table)) {
+      insert_into_label_table((struct Label) {.label_name = first_word_with_no_spaces, .location = pc_track}, label_table);
+    } 
     
-  } else if (opcode_buffer == -1 && first_word[0] != 'B') {
+  } else if (opcode_buffer == -1 && first_word_with_no_spaces[0] != 'B') {
       invoke_error("CANNOT FIND OPCODE");
   }
 
@@ -126,7 +163,13 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
 
   instruction_struct.operands_count = operand_count;
 
-  //destroy_table(label_table);
+  if (instruction_struct.opcode != EMP) free(first_word_with_no_spaces);
+
+  /*
+  if (instruction_struct.opcode != EMP) {
+    pc_track++;
+  }
+  */
   return instruction_struct;
   
 }

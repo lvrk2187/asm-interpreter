@@ -105,16 +105,18 @@ void execute(instruction_t instruction) {
       break;
       
     case CMP: 
-
+    
       validate_operands(instruction, 0x2);
 
+      registers[R_CMP] &= 0x0;
+
       if (retrieve_value(instruction, OPERAND1) == retrieve_value(instruction, OPERAND2)) {
-        registers[R_FLAGS] |= EQ; 
+        registers[R_CMP] |= EQ; 
       } else {
-        registers[R_FLAGS] |= NE;
+        registers[R_CMP] |= NE;
       
-        if (retrieve_value(instruction, OPERAND1) > retrieve_value(instruction, OPERAND2)) registers[R_FLAGS] |= GT; 
-        else if (retrieve_value(instruction, OPERAND1) < retrieve_value(instruction, OPERAND2)) registers[R_FLAGS] |= LT; 
+        if (retrieve_value(instruction, OPERAND1) > retrieve_value(instruction, OPERAND2)) registers[R_CMP] |= GT; 
+        else if (retrieve_value(instruction, OPERAND1) < retrieve_value(instruction, OPERAND2)) registers[R_CMP] |= LT; 
       }
       
       break;
@@ -207,7 +209,10 @@ void execute(instruction_t instruction) {
         
         break;
     case OUT : 
-      printf("%d", retrieve_value(instruction, OPERAND1));
+      printf("%d\n", retrieve_value(instruction, OPERAND1));
+      break;
+      
+    case EMP:
       break;
   }  
 }

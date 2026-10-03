@@ -35,6 +35,11 @@ size_t find_instruction_location(char* label_name, struct Label_Table *label_tab
 }
 
 void destroy_table(struct Label_Table* label_table) {
+
+  for (int i = 0; i < label_table->label_count; i++) {
+    free(label_table->labels[i].label_name);
+  }
+  
   free(label_table->labels);
   free(label_table);
 }

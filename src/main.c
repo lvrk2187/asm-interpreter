@@ -1,65 +1,39 @@
-#include <errno.h>
-#include <string.h>
 #include "../include/virtual_machine.h"
 #include "../include/interpreter.h"
 
-int main() {
-
-  /* 
-
-
-
-  instruction_t k = declare_instructions
-    (ADD, 
-    3, 
-    (operand){
-      .operand_mode = REGISTER_ADDRESS,
-      .data.reg = 2,
-      },
-    (operand){
-      .operand_mode = LITERAL,
-      .data.literal = 2
-      },
-    (operand){
-      .operand_mode = LITERAL,
-      .data.literal = 3
-      }
-  );
-
-  instruction_t l = declare_instructions
-    (ADD, 
-    3, 
-    (operand){
-      .operand_mode = REGISTER_ADDRESS,
-      .data.reg = 2,
-      },
-    (operand){
-      .operand_mode = REGISTER_ADDRESS,
-      .data.literal = 2
-      },
-    (operand){
-      .operand_mode = LITERAL,
-      .data.literal = 3
-      }
-  );
-  execute(k);
-  execute(l);
-  output_registers();
-  */
+int main(int argc, char** argv) {
   
+  char file_name[] = "src.aasm";
 
+  FILE* src_file = fopen(file_name, "r");
 
-  // printf("%lu", sizeof(instruction_t));
   struct Label_Table* table = create_label_table();
-  char instructions[6][64] = {"MOV R0, #5", "AND R1, R0, #1", "HALT"};
-  
-  for (int i = 0; i < 3; i++) {
-    program[i] = parse_line(instructions[i], table);
-  }
 
+  
+  size_t current_line_number = 0;
+
+  char* current_line = NULL;
+  size_t current_line_buffer_length = 0;
+  ssize_t current_line_length = 0;
+
+  retrieve_labels_from_src(file_name, table);
+
+
+  while ((current_line_length = getline(&current_line, &current_line_buffer_length, src_file)) != -1) {
+    current_line[current_line_length - 1] = '\0';
+    program[current_line_number] = parse_line(current_line, table); 
+    current_line_number++;
+
+    if (current_line_number == 10000) break;
+  }
+  
+
+  free(current_line);
+  
+  // printf("%lu", sizeof(instruction_t));
   run_program();
   
-  output_registers();
+  //output_registers();
   
 
   destroy_table(table);

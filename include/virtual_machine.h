@@ -1,12 +1,14 @@
 #pragma once
 
+#include "label_table.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #define MAX_NUMBER_OF_LABELS 64
 #define MAX_NUMBER_OF_OPERANDS 3
-#define NUMBER_OF_OPCODES 19
+#define NUMBER_OF_OPCODES 20
 #define SIZE_OF_MEMORY 128
 
 /*
@@ -48,7 +50,8 @@ enum opcodes {
   LSL, //3
   LSR, //3
   HALT, //0
-  OUT //1
+  OUT, //1
+  EMP
 };
 
 typedef struct {
