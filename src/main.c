@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv) {
   
-  char file_name[] = "testing_files/fact.aasm";
+  char file_name[] = "testing_files/mul.aasm";
 
   FILE* src_file = fopen(file_name, "r");
 

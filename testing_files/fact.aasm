@@ -1,9 +1,24 @@
-	MOV R0, #2
+    MOV R0, #1
+    MOV R1, #5
+
 LOOP:
-	OUT R0
-	SUB R0, R0, #1
-	CMP R0, #0
-	BEQ END
-	B LOOP
+    MOV R2, #0
+    MOV R3, R1
+
+MULTIPLY:
+    CMP R3, #0
+    BEQ MULTIPLY_END
+    ADD R2, R2, R0
+    SUB R3, R3, #1
+    B MULTIPLY
+
+MULTIPLY_END:
+    MOV R0, R2
+    SUB R1, R1, #1
+    CMP R1, #0
+    BEQ END
+    B LOOP
+
 END:
-	HALT
+    OUT R0
+    HALT

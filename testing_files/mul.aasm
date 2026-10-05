@@ -1,0 +1,14 @@
+    MOV R0, #67
+    MOV R1, #42
+    MOV R2, #0
+
+LOOP:
+    CMP R1, #0
+    BEQ END
+    ADD R2, R2, R0
+    SUB R1, R1, #1
+    B LOOP
+
+END:
+    OUT R2
+    HALT

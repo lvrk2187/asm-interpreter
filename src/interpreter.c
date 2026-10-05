@@ -50,6 +50,17 @@ bool expression_is_alphabetic(char *expr) {
     return true;
 }
 
+bool expression_is_space_or_null(char *expr) {
+
+  if (expr == NULL) return true;
+  
+  for (int i = 0; i < strlen(expr); i++) {
+    if (!isspace(expr[i])) return false;
+  }
+
+  return true;
+}
+
 char* remove_spaces(char *expr) {
   
   char* buffer = malloc(sizeof(char) * (strlen(expr) + 1));
@@ -74,17 +85,23 @@ char* remove_spaces(char *expr) {
     
 
   while ((current_line_length = getline(&current_line, &current_line_buffer_length, src_pointer)) != -1) {
-
+    if (expression_is_space_or_null(current_line)) continue;
+    
     if (current_line_length < 2) invoke_error("INVALID LENGTH");
     
     current_line[current_line_length - 1] = '\0';
     char* remove_spaces_from_label = remove_spaces(current_line);
 
-    if (remove_spaces_from_label[strlen(remove_spaces_from_label) - 1] != ':') continue;
+    if (remove_spaces_from_label[strlen(remove_spaces_from_label) - 1] != ':') {
+      line_number++;
+      continue;
+    }
     
     remove_spaces_from_label[strlen(remove_spaces_from_label) - 1] = '\0';
     insert_into_label_table((struct Label) {.label_name = remove_spaces_from_label, .location = line_number}, table);
+    line_number++;
   }
+
   
   fclose(src_pointer);
  }
@@ -95,6 +112,8 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
   instruction_struct.operands_count = 0;
   short operand_count = 0;
   size_t pc_track = 0;
+
+  if (expression_is_space_or_null(line)) {instruction_struct.opcode = EMP; return instruction_struct;}
   
   char* first_word = strtok(line, " ");
   
