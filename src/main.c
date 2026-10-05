@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv) {
   
-  char file_name[] = "fact.aasm";
+  char file_name[] = "testing_files/fact.aasm";
 
   FILE* src_file = fopen(file_name, "r");
 
@@ -24,7 +24,6 @@ int main(int argc, char** argv) {
     program[current_line_number] = parse_line(current_line, table); 
     current_line_number++;
 
-    if (current_line_number == 10000) break;
   }
   
 
