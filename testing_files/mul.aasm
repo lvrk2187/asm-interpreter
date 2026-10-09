@@ -1,5 +1,5 @@
-    MOV R0, #67
-    MOV R1, #42
+    MOV R0, #3
+    MOV R1, #2
     MOV R2, #0
 
 LOOP:

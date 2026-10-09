@@ -64,14 +64,16 @@ bool expression_is_space_or_null(char *expr) {
 char* remove_spaces(char *expr) {
   
   char* buffer = malloc(sizeof(char) * (strlen(expr) + 1));
+  int j = 0;
 
-  for (int i = 0, j = 0; i < strlen(expr); i++) {
+  for (int i = 0; i < strlen(expr); i++) {
     if (isspace(expr[i]) == 0) {
       buffer[j] = expr[i];
       j++;
     }
   }
-  
+
+  buffer[j] = '\0';
   return buffer;
 }
 
@@ -94,6 +96,7 @@ char* remove_spaces(char *expr) {
 
     if (remove_spaces_from_label[strlen(remove_spaces_from_label) - 1] != ':') {
       line_number++;
+      free(remove_spaces_from_label);
       continue;
     }
     
@@ -102,7 +105,7 @@ char* remove_spaces(char *expr) {
     line_number++;
   }
 
-  
+  free(current_line);
   fclose(src_pointer);
  }
 
@@ -111,22 +114,21 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
   instruction_t instruction_struct = {0};
   instruction_struct.operands_count = 0;
   short operand_count = 0;
-  size_t pc_track = 0;
 
   if (expression_is_space_or_null(line)) {instruction_struct.opcode = EMP; return instruction_struct;}
   
   char* first_word = strtok(line, " ");
-  
-  char* first_word_with_no_spaces = remove_spaces(first_word);
-  enum opcodes opcode_buffer = match_opcode(first_word_with_no_spaces);
 
-  if (strlen(first_word_with_no_spaces) < 1) {   
+  char* first_word_with_spaces_removed = remove_spaces(first_word);
+  
+  enum opcodes opcode_buffer = match_opcode(first_word_with_spaces_removed);
+
+  if (strlen(first_word_with_spaces_removed) < 1) {   
     invoke_error("FAILED OPCODE PARSING");
-  } else if (first_word[strlen(first_word_with_no_spaces) - 1] == ':') {
+  } else if (first_word_with_spaces_removed[strlen(first_word_with_spaces_removed) - 1] == ':') {
     //it is a label then...
-    first_word_with_no_spaces[strlen(first_word_with_no_spaces) - 1] = '\0';
     opcode_buffer = EMP;    
-  } else if (opcode_buffer == -1 && first_word_with_no_spaces[0] != 'B') {
+  } else if (opcode_buffer == -1 && first_word_with_spaces_removed[0] != 'B') {
       invoke_error("CANNOT FIND OPCODE");
   }
 
@@ -161,7 +163,6 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
       instruction_struct.operands[operand_count].operand_mode = LITERAL;
       instruction_struct.operands[operand_count].data.literal =  literal_number;  
     } else if (expression_is_numeric(current_operand)) {
-      //implement 
       long memory_location = atoi(current_operand);
 
       instruction_struct.operands[operand_count].operand_mode = MEMORY_ADDRESS;
@@ -177,13 +178,7 @@ instruction_t parse_line(char* line, struct Label_Table *label_table) {
 
   instruction_struct.operands_count = operand_count;
 
-  if (instruction_struct.opcode != EMP) free(first_word_with_no_spaces);
-
-  /*
-  if (instruction_struct.opcode != EMP) {
-    pc_track++;
-  }
-  */
+  free(first_word_with_spaces_removed);
   return instruction_struct;
   
 }
